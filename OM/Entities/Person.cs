@@ -13,7 +13,7 @@ namespace RedisJsonPlayground.Entities
     [Document(IndexName = "people", StorageType = StorageType.Json, Prefixes = new[] { "idx:person" }, Language = "english")]
     public class Person
     {
-        [Indexed(Separator = ',')] 
+        [Indexed(Separator = ',')]
         public string Tags { get; set; } = string.Empty;
         //[Indexed(Sortable = true, CaseSensitive = false, Normalize = true)] 
         //[Searchable(Weight = 10, Sortable = true)]
@@ -22,12 +22,12 @@ namespace RedisJsonPlayground.Entities
         //[Indexed(Aggregatable = true)] 
         [Searchable(Weight = 2)]
         public string LastName { get; set; } = string.Empty;
-        [Searchable]
+        [Searchable(Sortable = false)]
         public string Desc { get; set; } = string.Empty;
         [RedisIdField]
-        public string Email { get; set; }=string.Empty;
+        public string Email { get; set; } = string.Empty;
         [Indexed(Sortable = true)]
-        public int Age { get; set; }= 20;
+        public int Age { get; set; } = 20;
         //[Indexed]
         public Address? Address { get; set; }
 

@@ -153,6 +153,7 @@ namespace RedisJsonPlayground
                 var people1 = await _people.Where(p => p.Desc == "going").ToImmutableArrayAsync();
                 var people2 = await _people.Where(p => p.Desc == "goes").ToImmutableArrayAsync();
 
+
             }
             finally
             {
