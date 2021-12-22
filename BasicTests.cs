@@ -20,7 +20,6 @@ namespace RedisJsonPlayground
             _provider = new RedisConnectionProvider("redis://localhost:6379");
             _provider.Connection.DropIndex(typeof(Customer));
             _provider.Connection.CreateIndex(typeof(Customer));
-            // _provider.Connection.CreateIndex(typeof(Customer));
         }
 
 

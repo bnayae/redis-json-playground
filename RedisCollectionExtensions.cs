@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RedisJsonPlayground
+namespace System.Linq
 {
     public static class RedisCollectionExtensions
     {

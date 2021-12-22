@@ -10,7 +10,7 @@ using Redis.OM.Modeling;
 namespace RedisJsonPlayground.Entities
 {
     [DebuggerDisplay("{FirstName} {LastName}: {Email}, {Age}")]
-    [Document]
+    [Document(Prefixes = new[] { "idx:customers" })]
     public class Customer
     {
         [Indexed(Sortable = true, CaseSensitive = false, Normalize = true)] 

@@ -13,13 +13,14 @@ namespace RedisJsonPlayground.Entities
     [Document]
     public class Address
     {
-        [Indexed(Sortable = true, CaseSensitive = false, Normalize = true)]
+        [Searchable(Weight = 2)]
         public string City { get; set; } = string.Empty;
         [Indexed]
         public string Street { get; set; } = string.Empty;
         [Indexed(Aggregatable = true)]
         public string House { get; set; } = string.Empty;
-        [RedisIdField]
+        //[RedisIdField]
+        [Indexed]
         public string Zip { get; set; } = string.Empty;
     }
 }
