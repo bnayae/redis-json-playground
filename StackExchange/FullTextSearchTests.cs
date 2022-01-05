@@ -26,6 +26,112 @@ namespace RedisJsonPlayground
         }
 
         [Fact]
+        public async Task Json_Global_Query_Test()
+        {
+            string idx = "idx:tests:x";
+            Client cl = await PrepareAsync(idx);
+
+            // Query
+            InfoResult inf = await cl.GetInfoParsedAsync();
+            Assert.NotEqual(0, inf.NumDocs);
+            Query q = new("bnaya")
+            {
+                //ExplainScore =  true,
+                NoStopwords = true,
+                WithScores = true,                
+            };
+            var res = cl.Search(q);
+
+            Assert.Equal(1, res.TotalResults);
+           _output.WriteLine(res.Documents[0]["json"]);
+        }
+
+        // field tokenization: https://oss.redis.com/redisearch/Escaping/#the_rules_of_text_field_tokenization
+        [Fact]
+        public async Task Json_Global_Email_Format_Query_Test()
+        {
+            string idx = "idx:tests:x";
+            Client cl = await PrepareAsync(idx);
+
+            // Query
+            InfoResult inf = await cl.GetInfoParsedAsync();
+            Assert.NotEqual(0, inf.NumDocs);
+            Query q = new("weknow bnayae")
+            {
+                //ExplainScore =  true,
+                NoStopwords = true,
+                WithScores = true,                
+            };
+            var res = cl.Search(q);
+
+            Assert.Equal(1, res.TotalResults);
+           _output.WriteLine(res.Documents[0]["json"]);
+        }
+
+        [Fact]
+        public async Task Json_Field_Email_Format_Query_Test()
+        {
+            string idx = "idx:tests:x";
+            Client cl = await PrepareAsync(idx);
+
+            // Query
+            InfoResult inf = await cl.GetInfoParsedAsync();
+            Assert.NotEqual(0, inf.NumDocs);
+            Query q = new("@email:weknow bnayae")
+            {
+                //ExplainScore =  true,
+                NoStopwords = true,
+                WithScores = true,                
+            };
+            var res = cl.Search(q);
+
+            Assert.Equal(1, res.TotalResults);
+           _output.WriteLine(res.Documents[0]["json"]);
+        }
+
+        [Fact]
+        public async Task Json_Global_Nest_Street_Test()
+        {
+            string idx = "idx:tests:x";
+            Client cl = await PrepareAsync(idx);
+
+            // Query
+            InfoResult inf = await cl.GetInfoParsedAsync();
+            Assert.NotEqual(0, inf.NumDocs);
+            Query q = new("ben gurion")
+            {
+                //ExplainScore =  true,
+                NoStopwords = true,
+                WithScores = true,                
+            };
+            var res = cl.Search(q);
+
+            Assert.Equal(1, res.TotalResults);
+           _output.WriteLine(res.Documents[0]["json"]);
+        }
+
+        [Fact]
+        public async Task Json_Field_Nest_Street_Test()
+        {
+            string idx = "idx:tests:x";
+            Client cl = await PrepareAsync(idx);
+
+            // Query
+            InfoResult inf = await cl.GetInfoParsedAsync();
+            Assert.NotEqual(0, inf.NumDocs);
+            Query q = new("@street:ben gurion")
+            {
+                //ExplainScore =  true,
+                NoStopwords = true,
+                WithScores = true,                
+            };
+            var res = cl.Search(q);
+
+            Assert.Equal(1, res.TotalResults);
+           _output.WriteLine(res.Documents[0]["json"]);
+        }
+
+        [Fact]
         public async Task Json_SingleProp_Index_Test()
         {
             string idx = "idx:tests:a";
@@ -74,7 +180,11 @@ namespace RedisJsonPlayground
             Client cl = await PrepareAsync(idx);
 
             // Query
-            SearchResult res = await cl.SearchAsync(new Query("@desc:going") { WithPayloads = true });
+            Query q = new("@desc:go")
+            {
+                WithPayloads = true
+            };
+            SearchResult res = await cl.SearchAsync(q);
 
             Assert.Equal(2, res.TotalResults);
             Assert.Equal("person:2", res.Documents[0].Id);
@@ -114,9 +224,11 @@ namespace RedisJsonPlayground
             Client cl = await GetClientAsync(idx);
             IndexDefinition defenition = new IndexDefinition(prefixes: new[] { "person:" }, type: IndexDefinition.IndexType.Json);
             Schema sc = new Schema()
+                                .AddSortableTextField(FieldName.Of("$.email").As("email"), unNormalizedForm: true)
                                 .AddSortableTextField(FieldName.Of("$.firstName"), unNormalizedForm: true)
-                                .AddSortableTextField("$.desc")
-                                .AddSortableTextField("$.address.city");
+                                .AddTextField("$.desc")
+                                .AddSortableTextField("$.address.city")
+                                .AddSortableTextField(FieldName.Of("$.address.street").As("street"));
             Assert.True(await cl.CreateIndexAsync(sc, new ConfiguredIndexOptions(defenition)));
 
             var people = GetPeople();
@@ -210,6 +322,22 @@ namespace RedisJsonPlayground
                                         Street = "anywhere",
                                         House = "2050",
                                         Zip = "0110100111"
+                                    }
+                                },
+                                new Person
+                                {
+                                    FirstName = "Bnaya1",
+                                    LastName = "Eshet",
+                                    Age = 50,
+                                    Email = "bnayae@weknow.network",
+                                    Tags = "dev,founder",
+                                    Desc = "CTO of WeKnow",
+                                    Address = new Address
+                                    {
+                                        City = "Givatayim ",
+                                        Street = "ben-gurion",
+                                        House = "168",
+                                        Zip = "7676767"
                                     }
                                 }
                             };
